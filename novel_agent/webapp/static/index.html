@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>novel_agent · 网文创作台</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div id="app" v-cloak>
+  <div class="nojs" style="display:none">正在加载界面…<br>若长时间空白，说明 Vue CDN 资源加载失败，请检查网络后刷新。</div>
+  <template v-if="ready">
+    <div v-if="!health.api_key_configured" class="banner warn">
+      ⚠ DEEPSEEK_API_KEY 未配置 — 写作任务会失败。请在环境变量或 novel_agent/.env 中设置后重启服务。
+    </div>
+    <div class="topbar">
+      <div class="brand">🔮 novel_agent</div>
+      <div class="book-select" @click="go('shelf')" title="点击回书架">
+        {{ currentBook ? '📖 ' + currentBook.title : '未选择书籍' }} ▾
+      </div>
+      <div v-if="activeTask" class="task-pill" :class="activeTask.status" @click="overlayOpen = true">
+        <span class="spinner"></span>{{ activeTask.label }} · {{ taskStageLabel || '准备中' }}
+      </div>
+      <span class="spacer"></span>
+      <button class="btn primary" :disabled="!!activeTask || !currentBook" @click="writeNextChapter">▶ 写下一章</button>
+    </div>
+    <div class="body">
+      <nav class="rail">
+        <div class="rail-item" :class="{on: page==='shelf'}" title="书架" @click="go('shelf')">📚</div>
+        <div class="rail-item" :class="{on: page==='workbench'}" title="写作台" @click="go('workbench')">✍️</div>
+        <div class="rail-item" :class="{on: page==='settings-page'}" title="设定库" @click="go('settings-page')">🏛</div>
+        <div class="rail-item" :class="{on: page==='hooks'}" title="伏笔追踪" @click="go('hooks')">🧵</div>
+        <div class="rail-item" :class="{on: page==='report'}" title="评测报告" @click="go('report')">📊</div>
+        <div class="rail-item" :class="{on: page==='export'}" title="导出" @click="go('export')">📤</div>
+      </nav>
+      <main class="main">
+        <component :is="pageComponent"></component>
+      </main>
+    </div>
+
+    <!-- 任务进度遮罩 -->
+    <div v-if="overlayOpen && activeTask" class="overlay" @click.self="overlayOpen = false">
+      <div class="overlay-card">
+        <div class="overlay-head">
+          <span class="spinner" v-if="activeTask.status==='running'"></span>
+          <span v-if="activeTask.status==='failed'" class="fail-mark">✗</span>
+          <span v-if="activeTask.status==='done'" class="ok-mark">✓</span>
+          <b>{{ activeTask.label }}</b>
+          <span class="spacer"></span>
+          <button class="btn ghost sm" @click="overlayOpen = false"
+                  v-if="activeTask.status!=='running'">关闭</button>
+        </div>
+        <div class="steps">
+          <div v-for="(st, i) in taskSteps" :key="st.key" class="step"
+               :class="{done: stepIndex > i, now: stepIndex === i, fail: activeTask.status==='failed' && stepIndex === i}">
+            {{ st.label }}<small v-if="st.detail">{{ st.detail }}</small>
+          </div>
+        </div>
+        <div class="logbox">
+          <div v-for="(l, i) in taskLogs" :key="i" :class="logClass(l)">{{ l }}</div>
+        </div>
+        <div v-if="partialText" class="partial">
+          <div class="sec-title">正文预览</div>
+          <div class="partial-text">{{ partialText }}</div>
+        </div>
+      </div>
+    </div>
+  </template>
+</div>
+<script src="/vendor/vue.global.prod.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

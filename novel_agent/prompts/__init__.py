@@ -1,0 +1,21 @@
+"""提示词模块"""
+from prompts.templates import (
+    SETTING_INIT_SYSTEM,
+    get_setting_init_user,
+    ROUGH_OUTLINE_SYSTEM,
+    get_rough_outline_user,
+    DETAILED_OUTLINE_SYSTEM,
+    get_detailed_outline_user,
+    SETTING_UPDATE_SYSTEM,
+    get_setting_update_user,
+    OUTLINE_REVIEW_SYSTEM,
+    get_outline_review_user,
+    CHAPTER_WRITING_SYSTEM,
+    get_chapter_writing_user,
+    TITLE_SYSTEM,
+    get_title_user,
+    CONTENT_REVIEW_SYSTEM,
+    get_content_review_user,
+    SETTING_MAINTENANCE_SYSTEM,
+    get_setting_maintenance_user,
+)

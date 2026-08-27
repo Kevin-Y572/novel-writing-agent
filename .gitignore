@@ -1,0 +1,19 @@
+# 密钥（绝不入库）
+.env
+novel_agent/.env
+
+# 生成产物与日志
+novel_agent/data/
+*.log
+novel_agent/novel_task.done
+novel_agent/replay_pid*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# IDE / 工具
+.idea/
+.zcode/
+.dsh/
+.superpowers/
